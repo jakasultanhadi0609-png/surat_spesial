@@ -1,0 +1,593 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Surat Spesial Untukmu</title>
+    <!-- CDN SDK Supabase -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            background-color: #080d1a;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            overflow: hidden;
+            perspective: 1000px;
+            position: relative;
+        }
+
+        /* LAYER BACKGROUND RUMPUT */
+        .field-bg-layer {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: #4caf50;
+            background-image: 
+                radial-gradient(circle at 20% 30%, #66bb6a 0%, transparent 50%),
+                radial-gradient(circle at 80% 70%, #388e3c 0%, transparent 50%);
+            opacity: 0;
+            transition: opacity 0.8s ease-in-out;
+            will-change: opacity;
+            z-index: 0;
+        }
+
+        /* LATAR BELAKANG BINTANG MALAM */
+        .stars-container {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 1;
+            transition: opacity 0.8s ease-in-out;
+            will-change: opacity;
+        }
+
+        .star {
+            position: absolute;
+            background-color: #ffffff;
+            border-radius: 50%;
+            animation: kelapKelip infinite ease-in-out alternate;
+            will-change: transform, opacity;
+        }
+
+        @keyframes kelapKelip {
+            0% { opacity: 0.2; transform: scale(0.8); }
+            100% { opacity: 1; transform: scale(1.2); }
+        }
+
+        /* WADAH PADANG RUMPUT */
+        .field-container {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 2;
+            opacity: 0;
+            transition: opacity 0.8s ease-in-out;
+            will-change: opacity;
+        }
+
+        body.open-bg .field-bg-layer { opacity: 1; }
+        body.open-bg .stars-container { opacity: 0; }
+        body.open-bg .field-container { opacity: 1; pointer-events: auto; }
+
+        .grass-tuft {
+            position: absolute;
+            transform-origin: bottom center;
+            pointer-events: none;
+            will-change: transform;
+        }
+
+        body.open-bg .grass-tuft {
+            animation: tuftWindSway 2.5s infinite ease-in-out;
+        }
+
+        @keyframes tuftWindSway {
+            0%, 100% { transform: rotate(0deg) scale(var(--tuft-scale, 1)); }
+            50% { transform: rotate(12deg) scale(var(--tuft-scale, 1)); }
+        }
+
+        .wind-line {
+            position: absolute;
+            height: 2px;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.5), transparent);
+            border-radius: 50%;
+            transform: translateX(-100%);
+            animation: blowWind infinite linear;
+            pointer-events: none;
+            will-change: transform, opacity;
+        }
+
+        @keyframes blowWind {
+            0% { transform: translateX(-150px); opacity: 0; }
+            30%, 80% { opacity: 0.7; }
+            100% { transform: translateX(100vw); opacity: 0; }
+        }
+
+        .container {
+            position: relative;
+            width: min(300px, 85vw);
+            height: min(200px, 56vw);
+            transform-style: preserve-3d;
+            z-index: 10;
+        }
+
+        .container.shake-animation .envelope-wrapper {
+            animation: goyang 0.6s infinite alternate ease-in-out;
+            cursor: pointer;
+        }
+
+        @keyframes goyang {
+            0% { transform: rotate(-3deg) translateY(0); }
+            100% { transform: rotate(3deg) translateY(-5px); }
+        }
+
+        .envelope-wrapper {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            background-color: #f08080;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.4);
+            border-bottom-left-radius: 6px;
+            border-bottom-right-radius: 6px;
+            z-index: 4;
+            transform-style: preserve-3d;
+        }
+
+        .envelope-flap {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 0;
+            height: 0;
+            border-top: calc(min(300px, 85vw) * 0.433) solid #cd5c5c;
+            border-left: calc(min(300px, 85vw) / 2) solid transparent;
+            border-right: calc(min(300px, 85vw) / 2) solid transparent;
+            transform-origin: top;
+            transition: transform 0.4s ease-in-out;
+            z-index: 5;
+        }
+
+        .envelope-pin {
+            position: absolute;
+            top: -30px; 
+            left: 50%;
+            transform: translateX(-50%);
+            width: 34px;
+            height: 34px;
+            background-color: #b22222;
+            border: 2px solid #ffd700;
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            color: #ffd700;
+            font-size: 14px;
+            font-weight: bold;
+            pointer-events: none;
+        }
+
+        .envelope-wrapper::after {
+            content: "";
+            position: absolute;
+            z-index: 4;
+            border-left: calc(min(300px, 85vw) / 2) solid #e9967a;
+            border-right: calc(min(300px, 85vw) / 2) solid #e9967a;
+            border-bottom: calc(min(200px, 56vw) * 0.5) solid #e9967a;
+            border-top: calc(min(200px, 56vw) * 0.5) solid transparent;
+            bottom: 0;
+            border-bottom-left-radius: 6px;
+            border-bottom-right-radius: 6px;
+        }
+
+        /* DESAIN SURAT DAN GAMBAR */
+        .letter {
+            position: absolute;
+            top: 5%;
+            left: 5%;
+            width: 90%;
+            height: 90%;
+            background-color: white;
+            padding: 20px 15px;
+            border-radius: 8px;
+            z-index: 2;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+            text-align: center;
+            opacity: 0;
+            transform: scale(0.8);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            will-change: transform, opacity;
+            overflow-y: auto;
+        }
+
+        .letter h2 {
+            color: #f08080;
+            font-size: clamp(16px, 4vw, 22px);
+            margin-bottom: 8px;
+        }
+
+        .letter p {
+            font-size: clamp(12px, 3vw, 14px);
+            color: #444;
+            line-height: 1.5;
+        }
+
+        .letter-img {
+            max-width: 100%;
+            max-height: 120px;
+            object-fit: contain;
+            margin-bottom: 10px;
+            border-radius: 6px;
+            display: none;
+        }
+
+        .flower-wrapper {
+            position: absolute;
+            width: 0;
+            height: 0;
+            opacity: 0;
+            transform: scale(0);
+            will-change: transform, opacity;
+        }
+
+        body.open-bg .flower-wrapper {
+            animation: bloom 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+        }
+
+        @keyframes bloom {
+            0% { transform: scale(0); opacity: 0; }
+            100% { transform: scale(var(--flower-fixed-scale, 0.3)); opacity: 1; }
+        }
+
+        .flower {
+            position: absolute;
+            width: 0;
+            height: 0;
+            cursor: pointer;
+            pointer-events: auto;
+            transform-origin: center center;
+            will-change: transform;
+        }
+
+        body.open-bg .flower {
+            animation: flowerWindSway 2.4s infinite ease-in-out alternate;
+        }
+
+        @keyframes flowerWindSway {
+            0% { transform: rotate(-10deg); }
+            100% { transform: rotate(10deg); }
+        }
+
+        .core {
+            position: absolute;
+            width: 40px;
+            height: 40px;
+            background: #ffcc00;
+            border-radius: 50%;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            z-index: 10;
+        }
+
+        .petal {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 22px;
+            height: 80px;
+            background: #ffffff;
+            border-radius: 50% 50% 45% 45%;
+            transform-origin: bottom center;
+            z-index: 5;
+            transition: transform 0.4s ease;
+        }
+
+        .p1 { transform: translate(-50%, -100%) rotate(0deg); }
+        .p2 { transform: translate(-50%, -100%) rotate(45deg); }
+        .p3 { transform: translate(-50%, -100%) rotate(90deg); }
+        .p4 { transform: translate(-50%, -100%) rotate(135deg); }
+        .p5 { transform: translate(-50%, -100%) rotate(180deg); }
+        .p6 { transform: translate(-50%, -100%) rotate(225deg); }
+        .p7 { transform: translate(-50%, -100%) rotate(270deg); }
+        .p8 { transform: translate(-50%, -100%) rotate(315deg); }
+
+        .flower.closed .petal {
+            transform: translate(-50%, -50%) scale(0.25) !important;
+            opacity: 0.8;
+        }
+
+        .container.open .envelope-flap {
+            transform: rotateX(180deg);
+            z-index: 1;
+        }
+
+        .container.open .envelope-wrapper {
+            animation: jatuhBawah 0.8s forwards 0.3s;
+            will-change: transform, opacity;
+        }
+
+        @keyframes jatuhBawah {
+            0% { transform: translateY(0) rotate(0deg); opacity: 1; }
+            100% { transform: translateY(100vh) rotate(15deg); opacity: 0; }
+        }
+
+        .container.open .letter {
+            animation: lompatLurusDepan 0.7s forwards 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+
+        @keyframes lompatLurusDepan {
+            0% { opacity: 0; transform: translateY(0) scale(0.7); z-index: 2; }
+            30% { opacity: 1; z-index: 10; }
+            100% {
+                opacity: 1;
+                transform: translateY(0) scale(var(--letter-scale, 1.2));
+                z-index: 10;
+                box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            }
+        }
+
+        @media (max-width: 600px) {
+            :root { --letter-scale: 1.05; --flower-fixed-scale: 0.22; }
+        }
+
+        @media (min-width: 601px) {
+            :root { --letter-scale: 1.3; --flower-fixed-scale: 0.3; }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="field-bg-layer"></div>
+    <div class="stars-container" id="starsContainer"></div>
+
+    <div class="field-container" id="fieldContainer">
+        <div id="tuftsContainer"></div>
+        <div id="bgFlowersContainer"></div>
+        <div id="windContainer"></div>
+    </div>
+
+    <div class="container shake-animation" id="envelopeContainer">
+        <div class="envelope-wrapper" id="clickTarget">
+            <div class="envelope-flap">
+                <div class="envelope-pin" id="envelopePin">❤️</div>
+            </div>
+        </div>
+        
+        <div class="letter">
+            <img id="letterImage" class="letter-img" alt="Foto Surat">
+            <h2 id="letterTitle">Memuat...</h2>
+            <p id="letterMessage">Sedang mengambil pesan...</p>
+        </div>
+    </div>
+
+    <script>
+        // INISIALISASI SUPABASE (GANTI DENGAN DATA KAMU)
+        const supabaseUrl = 'URL_SUPABASE_KAMU'; 
+        const supabaseKey = 'ANON_KEY_SUPABASE_KAMU'; 
+        const supabase = window.supabase.createClient(supabaseUrl, supabaseKey);
+
+        // Ambil Data Surat dari Database
+        async function loadLetterData() {
+            const urlParams = new URLSearchParams(window.location.search);
+            const letterId = urlParams.get('id');
+
+            if (!letterId) {
+                document.getElementById('letterTitle').innerText = "Oops!";
+                document.getElementById('letterMessage').innerText = "Link surat tidak valid.";
+                return;
+            }
+
+            try {
+                const { data, error } = await supabase
+                    .from('letters')
+                    .select('*')
+                    .eq('id', letterId)
+                    .single();
+
+                if (error || !data) throw new Error("Surat tidak ditemukan!");
+
+                if (data.title) document.getElementById('letterTitle').innerText = data.title;
+                if (data.message) document.getElementById('letterMessage').innerHTML = data.message.replace(/\n/g, '<br>');
+                if (data.pin) document.getElementById('envelopePin').innerText = data.pin;
+                if (data.color) applyEnvelopeColor(data.color);
+                
+                if (data.image) {
+                    const imgEl = document.getElementById('letterImage');
+                    imgEl.src = data.image;
+                    imgEl.style.display = 'block';
+                }
+
+            } catch (err) {
+                console.error(err);
+                document.getElementById('letterTitle').innerText = "Oops!";
+                document.getElementById('letterMessage').innerText = "Gagal mengambil isi surat dari database.";
+            }
+        }
+
+        // Terapkan Warna Amplop Kustom
+        function applyEnvelopeColor(color) {
+            const wrapper = document.querySelector('.envelope-wrapper');
+            const flap = document.querySelector('.envelope-flap');
+            
+            const colors = {
+                pink: { bg: '#f08080', flap: '#cd5c5c' },
+                white: { bg: '#ffffff', flap: '#e0e0e0' },
+                blue: { bg: '#5d9cec', flap: '#4a89dc' },
+                red: { bg: '#e74c3c', flap: '#c0392b' },
+                purple: { bg: '#9b59b6', flap: '#8e44ad' }
+            };
+
+            if (colors[color]) {
+                wrapper.style.backgroundColor = colors[color].bg;
+                flap.style.borderTopColor = colors[color].flap;
+            }
+        }
+
+        loadLetterData();
+
+        // GENERASI BINTANG MALAM
+        const isMobile = window.innerWidth <= 600;
+        const starsContainer = document.getElementById('starsContainer');
+        const starCount = isMobile ? 25 : 45;
+
+        for (let i = 0; i < starCount; i++) {
+            const star = document.createElement('div');
+            star.classList.add('star');
+            const size = Math.random() * 2.5 + 1; 
+            star.style.width = `${size}px`;
+            star.style.height = `${size}px`;
+            star.style.top = `${Math.random() * 100}%`;
+            star.style.left = `${Math.random() * 100}%`;
+            star.style.animationDuration = `${Math.random() * 2 + 1}s`;
+            star.style.animationDelay = `${Math.random() * 2}s`;
+            starsContainer.appendChild(star);
+        }
+
+        // GENERASI RUMPUN RUMPUT
+        const tuftsContainer = document.getElementById('tuftsContainer');
+        const tuftCount = isMobile ? 18 : 32;
+
+        function createCartoonGrassTuftSVG() {
+            const svg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
+            svg.setAttribute("viewBox", "0 0 60 45");
+            svg.setAttribute("width", "40");
+            svg.setAttribute("height", "30");
+            svg.classList.add("grass-tuft");
+
+            const path = document.createElementNS("http://www.w3.org/2000/svg", "path");
+            path.setAttribute("d", "M 2,45 C 5,20 10,8 16,3 C 20,18 24,12 30,1 C 36,12 40,18 45,5 C 52,15 55,25 58,45 Z");
+            path.setAttribute("fill", "#1b5e20");
+            path.setAttribute("opacity", "0.7");
+            
+            svg.appendChild(path);
+            return svg;
+        }
+
+        for (let i = 0; i < tuftCount; i++) {
+            const tuft = createCartoonGrassTuftSVG();
+            const posX = Math.random() * 90 + 5;
+            const posY = Math.random() * 90 + 5;
+            
+            tuft.style.left = `${posX}%`;
+            tuft.style.top = `${posY}%`;
+            
+            const scale = Math.random() * 0.4 + 0.6;
+            tuft.style.setProperty('--tuft-scale', scale);
+
+            const windDelay = (posX / 100) * 1.5;
+            tuft.style.animationDelay = `${windDelay}s`;
+
+            tuftsContainer.appendChild(tuft);
+        }
+
+        // GENERASI GARIS HEMBUSAN ANGIN
+        const windContainer = document.getElementById('windContainer');
+        const windCount = isMobile ? 5 : 10;
+
+        for (let i = 0; i < windCount; i++) {
+            const wind = document.createElement('div');
+            wind.classList.add('wind-line');
+            
+            const length = Math.random() * 80 + 60;
+            wind.style.width = `${length}px`;
+            wind.style.top = `${Math.random() * 100}%`;
+            
+            wind.style.animationDuration = `${Math.random() * 1.5 + 1.5}s`;
+            wind.style.animationDelay = `${Math.random() * 2}s`;
+            
+            windContainer.appendChild(wind);
+        }
+
+        // FUNGSI MEMBUAT ELEMEN BUNGA
+        function createDaisyElement() {
+            const wrapper = document.createElement('div');
+            wrapper.classList.add('flower-wrapper');
+
+            const flower = document.createElement('div');
+            flower.classList.add('flower');
+
+            const core = document.createElement('div');
+            core.classList.add('core');
+            flower.appendChild(core);
+
+            for (let i = 1; i <= 8; i++) {
+                const petal = document.createElement('div');
+                petal.classList.add('petal', `p${i}`);
+                flower.appendChild(petal);
+            }
+
+            flower.addEventListener('click', (e) => {
+                e.stopPropagation();
+                flower.classList.toggle('closed');
+            });
+
+            wrapper.appendChild(flower);
+            return { wrapper, flower };
+        }
+
+        // GENERASI BUNGA
+        const bgFlowersContainer = document.getElementById('bgFlowersContainer');
+        const rows = isMobile ? 2 : 3;
+        const cols = isMobile ? 3 : 4;
+
+        for (let r = 0; r < rows; r++) {
+            for (let c = 0; c < cols; c++) {
+                if (r === 1 && c === 1) continue;
+
+                const { wrapper, flower } = createDaisyElement();
+
+                const cellWidth = 100 / cols;
+                const cellHeight = 100 / rows;
+
+                const posX = (c * cellWidth) + (Math.random() * (cellWidth * 0.5) + cellWidth * 0.25);
+                const posY = (r * cellHeight) + (Math.random() * (cellHeight * 0.5) + cellHeight * 0.25);
+
+                wrapper.style.left = `${posX}%`;
+                wrapper.style.top = `${posY}%`;
+
+                const bloomDelay = Math.random() * 0.3 + 0.2;
+                const windDelay = (posX / 100) * 1.2;
+
+                wrapper.style.animationDelay = `${bloomDelay}s`;
+                flower.style.animationDelay = `${windDelay}s`;
+
+                bgFlowersContainer.appendChild(wrapper);
+            }
+        }
+
+        // EVENT LISTENER PEMBUKA AMPLOP
+        const container = document.getElementById('envelopeContainer');
+        const clickTarget = document.getElementById('clickTarget');
+        
+        clickTarget.addEventListener('click', () => {
+            if (container.classList.contains('open')) return;
+
+            container.classList.remove('shake-animation');
+            container.classList.add('open');
+
+            setTimeout(() => {
+                document.body.classList.add('open-bg');
+            }, 300); 
+        });
+    </script>
+</body>
+</html>
