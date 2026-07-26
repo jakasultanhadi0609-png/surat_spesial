@@ -241,11 +241,11 @@
         <div class="form-group">
             <label>Pilih Warna Amplop:</label>
             <div class="color-options">
-                <button class="color-btn color-pink active" data-color="pink" title="Pink"></button>
-                <button class="color-btn color-white" data-color="white" title="Putih"></button>
-                <button class="color-btn color-blue" data-color="blue" title="Biru"></button>
-                <button class="color-btn color-red" data-color="red" title="Merah"></button>
-                <button class="color-btn color-purple" data-color="purple" title="Ungu"></button>
+                <button type="button" class="color-btn color-pink active" data-color="pink" title="Pink"></button>
+                <button type="button" class="color-btn color-white" data-color="white" title="Putih"></button>
+                <button type="button" class="color-btn color-blue" data-color="blue" title="Biru"></button>
+                <button type="button" class="color-btn color-red" data-color="red" title="Merah"></button>
+                <button type="button" class="color-btn color-purple" data-color="purple" title="Ungu"></button>
             </div>
         </div>
 
@@ -253,17 +253,17 @@
         <div class="form-group">
             <label for="customPinInput">Pilih atau Ketik Custom Pin/Stiker:</label>
             <div class="pin-options" id="pinPresetContainer">
-                <button class="pin-btn active" data-pin="❤️">❤️</button>
-                <button class="pin-btn" data-pin="🎀">🎀</button>
-                <button class="pin-btn" data-pin="⭐">⭐</button>
-                <button class="pin-btn" data-pin="🌸">🌸</button>
-                <button class="pin-btn" data-pin="👑">👑</button>
-                <button class="pin-btn" data-pin="🐱">🐱</button>
+                <button type="button" class="pin-btn active" data-pin="❤️">❤️</button>
+                <button type="button" class="pin-btn" data-pin="🎀">🎀</button>
+                <button type="button" class="pin-btn" data-pin="⭐">⭐</button>
+                <button type="button" class="pin-btn" data-pin="🌸">🌸</button>
+                <button type="button" class="pin-btn" data-pin="👑">👑</button>
+                <button type="button" class="pin-btn" data-pin="🐱">🐱</button>
             </div>
             <input type="text" id="customPinInput" placeholder="Atau ketik 1 emoji/huruf sendiri..." maxlength="4" style="margin-top: 10px;">
         </div>
 
-        <button class="btn-submit" id="btnGenerate">Selesai & Buat Link Surat</button>
+        <button type="button" class="btn-submit" id="btnGenerate">Selesai & Buat Link Surat</button>
         <div class="loading-text" id="loadingText">⏳ Menyimpan surat ke Database...</div>
 
         <!-- Box Link Hasil -->
@@ -271,14 +271,14 @@
             <label>✨ Link Ringkas Siap Dikirim!</label>
             <div class="link-container">
                 <input type="text" id="generatedLink" readonly>
-                <button class="btn-copy" id="btnCopy">Salin Link</button>
+                <button type="button" class="btn-copy" id="btnCopy">Salin Link</button>
             </div>
         </div>
     </div>
 
     <script>
-        // INISIALISASI SUPABASE (GANTI DENGAN DATA KAMU)
-        const supabaseUrl = 'https://npyscrwasomskilhxxkx.supabase.co/rest/v1/'; 
+        // INISIALISASI SUPABASE
+        const supabaseUrl = 'https://npyscrwasomskilhxxkx.supabase.co'; 
         const supabaseKey = 'sb_publishable_U5o5MEG7gyNsUuCvkEhxUw_oFcjxxBv'; 
         const supabase = window.supabase.createClient(supabaseUrl, supabaseKey);
 
@@ -289,7 +289,8 @@
         // Handle Pilih Warna Amplop
         const colorBtns = document.querySelectorAll('.color-btn');
         colorBtns.forEach(btn => {
-            btn.addEventListener('click', () => {
+            btn.addEventListener('click', (e) => {
+                e.preventDefault();
                 colorBtns.forEach(b => b.classList.remove('active'));
                 btn.classList.add('active');
                 selectedColor = btn.getAttribute('data-color');
@@ -301,7 +302,8 @@
         const customPinInput = document.getElementById('customPinInput');
 
         pinBtns.forEach(btn => {
-            btn.addEventListener('click', () => {
+            btn.addEventListener('click', (e) => {
+                e.preventDefault();
                 pinBtns.forEach(b => b.classList.remove('active'));
                 btn.classList.add('active');
                 selectedPin = btn.getAttribute('data-pin');
@@ -367,7 +369,8 @@
         const resultBox = document.getElementById('resultBox');
         const generatedLinkInput = document.getElementById('generatedLink');
 
-        btnGenerate.addEventListener('click', async () => {
+        btnGenerate.addEventListener('click', async (e) => {
+            e.preventDefault();
             const title = document.getElementById('title').value.trim();
             const message = document.getElementById('message').value.trim();
 
@@ -393,7 +396,9 @@
                 if (error) throw error;
 
                 if (data && data.length > 0) {
-                    const baseUrl = window.location.origin + window.location.pathname.replace('index.html', '');
+                    const currentPath = window.location.pathname;
+                    const folderPath = currentPath.substring(0, currentPath.lastIndexOf('/') + 1);
+                    const baseUrl = window.location.origin + folderPath;
                     const finalUrl = `${baseUrl}surat.html?id=${data[0].id}`;
                     
                     generatedLinkInput.value = finalUrl;
@@ -409,7 +414,8 @@
 
         // Copy Link Button
         const btnCopy = document.getElementById('btnCopy');
-        btnCopy.addEventListener('click', () => {
+        btnCopy.addEventListener('click', (e) => {
+            e.preventDefault();
             generatedLinkInput.select();
             navigator.clipboard.writeText(generatedLinkInput.value);
             btnCopy.innerText = "Tersalin! ✔️";
