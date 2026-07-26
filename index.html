@@ -279,8 +279,19 @@
     <script>
         // INISIALISASI SUPABASE
         const supabaseUrl = 'https://npyscrwasomskilhxxkx.supabase.co'; 
-        const supabaseKey = 'sb_publishable_U5o5MEG7gyNsUuCvkEhxUw_oFcjxxBv'; 
-        const supabase = window.supabase.createClient(supabaseUrl, supabaseKey);
+const supabaseKey = 'sb_publishable_U5o5MEG7gyNsUuCvkEhxUw_oFcjxxBv'; 
+
+// Pastikan supabaseLoaded sebelum memanggil createClient
+const createSupabaseClient = () => {
+    if (window.supabase && window.supabase.createClient) {
+        return window.supabase.createClient(supabaseUrl, supabaseKey);
+    } else if (typeof supabase !== 'undefined' && supabase.createClient) {
+        return supabase.createClient(supabaseUrl, supabaseKey);
+    }
+    return null;
+};
+
+const supabase = createSupabaseClient();
 
         let selectedColor = 'pink';
         let selectedPin = '❤️';
