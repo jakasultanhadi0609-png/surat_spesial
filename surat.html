@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Surat Spesial Untukmu</title>
-    <!-- CDN SDK Supabase -->
+    <!-- CDN SDK Supabase v2 -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <style>
         * {
@@ -25,7 +25,6 @@
             position: relative;
         }
 
-        /* LAYER BACKGROUND RUMPUT */
         .field-bg-layer {
             position: absolute;
             top: 0;
@@ -42,7 +41,6 @@
             z-index: 0;
         }
 
-        /* LATAR BELAKANG BINTANG MALAM */
         .stars-container {
             position: absolute;
             top: 0;
@@ -68,7 +66,6 @@
             100% { opacity: 1; transform: scale(1.2); }
         }
 
-        /* WADAH PADANG RUMPUT */
         .field-container {
             position: absolute;
             top: 0;
@@ -197,7 +194,6 @@
             border-bottom-right-radius: 6px;
         }
 
-        /* DESAIN SURAT DAN GAMBAR */
         .letter {
             position: absolute;
             top: 5%;
@@ -382,12 +378,10 @@
     </div>
 
     <script>
-        // INISIALISASI SUPABASE
-       const supabaseUrl = 'https://npyscrwasomskilhxxkx.supabase.co'; 
-const supabaseKey = 'sb_publishable_U5o5MEG7gyNsUuCvkEhxUw_oFcjxxBv'; 
-const supabaseClient = window.supabase.createClient(supabaseUrl, supabaseKey);
+        const supabaseUrl = 'https://npyscrwasomskilhxxkx.supabase.co'; 
+        const supabaseKey = 'sb_publishable_U5o5MEG7gyNsUuCvkEhxUw_oFcjxxBv'; 
+        const supabaseClient = window.supabase.createClient(supabaseUrl, supabaseKey);
 
-        // Ambil Data Surat dari Database
         async function loadLetterData() {
             const urlParams = new URLSearchParams(window.location.search);
             const letterId = urlParams.get('id');
@@ -425,7 +419,6 @@ const supabaseClient = window.supabase.createClient(supabaseUrl, supabaseKey);
             }
         }
 
-        // Terapkan Warna Amplop Kustom
         function applyEnvelopeColor(color) {
             const wrapper = document.querySelector('.envelope-wrapper');
             const flap = document.querySelector('.envelope-flap');
@@ -446,7 +439,6 @@ const supabaseClient = window.supabase.createClient(supabaseUrl, supabaseKey);
 
         loadLetterData();
 
-        // GENERASI BINTANG MALAM
         const isMobile = window.innerWidth <= 600;
         const starsContainer = document.getElementById('starsContainer');
         const starCount = isMobile ? 25 : 45;
@@ -464,7 +456,6 @@ const supabaseClient = window.supabase.createClient(supabaseUrl, supabaseKey);
             starsContainer.appendChild(star);
         }
 
-        // GENERASI RUMPUN RUMPUT
         const tuftsContainer = document.getElementById('tuftsContainer');
         const tuftCount = isMobile ? 18 : 32;
 
@@ -501,7 +492,6 @@ const supabaseClient = window.supabase.createClient(supabaseUrl, supabaseKey);
             tuftsContainer.appendChild(tuft);
         }
 
-        // GENERASI GARIS HEMBUSAN ANGIN
         const windContainer = document.getElementById('windContainer');
         const windCount = isMobile ? 5 : 10;
 
@@ -519,7 +509,6 @@ const supabaseClient = window.supabase.createClient(supabaseUrl, supabaseKey);
             windContainer.appendChild(wind);
         }
 
-        // FUNGSI MEMBUAT ELEMEN BUNGA
         function createDaisyElement() {
             const wrapper = document.createElement('div');
             wrapper.classList.add('flower-wrapper');
@@ -546,7 +535,6 @@ const supabaseClient = window.supabase.createClient(supabaseUrl, supabaseKey);
             return { wrapper, flower };
         }
 
-        // GENERASI BUNGA
         const bgFlowersContainer = document.getElementById('bgFlowersContainer');
         const rows = isMobile ? 2 : 3;
         const cols = isMobile ? 3 : 4;
@@ -576,7 +564,6 @@ const supabaseClient = window.supabase.createClient(supabaseUrl, supabaseKey);
             }
         }
 
-        // EVENT LISTENER PEMBUKA AMPLOP
         const container = document.getElementById('envelopeContainer');
         const clickTarget = document.getElementById('clickTarget');
         
