@@ -4,8 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Editor Surat Spesial</title>
-    <!-- CDN SDK Supabase -->
-    <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
+    <!-- CDN SDK Supabase v2 -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <style>
         * {
             margin: 0;
@@ -68,7 +68,6 @@
             height: 90px;
         }
 
-        /* PILIHAN WARNA AMPLOP */
         .color-options {
             display: flex;
             gap: 12px;
@@ -100,7 +99,6 @@
         .color-red    { background-color: #e74c3c; }
         .color-purple { background-color: #9b59b6; }
 
-        /* PILIHAN CUSTOM PIN / EMOJI */
         .pin-options {
             display: flex;
             gap: 10px;
@@ -147,7 +145,6 @@
             border: 1px dashed #475569;
         }
 
-        /* TOMBOL SELESAI */
         .btn-submit {
             width: 100%;
             padding: 12px;
@@ -167,7 +164,6 @@
             cursor: not-allowed;
         }
 
-        /* RESULT POPUP / LINK BOX */
         .result-box {
             margin-top: 20px;
             padding: 15px;
@@ -218,26 +214,22 @@
     <div class="editor-card">
         <h2>💌 Buat Surat Spesial</h2>
 
-        <!-- Judul Surat -->
         <div class="form-group">
             <label for="title">Judul Surat / Panggilan:</label>
             <input type="text" id="title" placeholder="Contoh: Halo Kamu! ❤️" value="Halo Kamu! ❤️">
         </div>
 
-        <!-- Isi Pesan Teks -->
         <div class="form-group">
             <label for="message">Isi Surat (Teks):</label>
             <textarea id="message" placeholder="Tulis pesan manismu di sini...">BOOM! 🚀 Suratnya melompat lurus ke depan mendatangi layarmu!</textarea>
         </div>
 
-        <!-- Upload Gambar PNG -->
         <div class="form-group">
             <label for="imageInput">Upload Gambar (Opsional):</label>
             <input type="file" id="imageInput" accept="image/png, image/jpeg" class="file-input">
             <img id="imgPreview" class="img-preview" alt="Preview Gambar">
         </div>
 
-        <!-- Pilih Warna Amplop -->
         <div class="form-group">
             <label>Pilih Warna Amplop:</label>
             <div class="color-options">
@@ -249,7 +241,6 @@
             </div>
         </div>
 
-        <!-- Pilih Custom Pin / Segel Amplop -->
         <div class="form-group">
             <label for="customPinInput">Pilih atau Ketik Custom Pin/Stiker:</label>
             <div class="pin-options" id="pinPresetContainer">
@@ -266,7 +257,6 @@
         <button type="button" class="btn-submit" id="btnGenerate">Selesai & Buat Link Surat</button>
         <div class="loading-text" id="loadingText">⏳ Menyimpan surat ke Database...</div>
 
-        <!-- Box Link Hasil -->
         <div class="result-box" id="resultBox">
             <label>✨ Link Ringkas Siap Dikirim!</label>
             <div class="link-container">
@@ -277,18 +267,14 @@
     </div>
 
     <script>
-       // 1. INISIALISASI SUPABASE (Ganti nama variabel jadi supabaseClient)
         const supabaseUrl = 'https://npyscrwasomskilhxxkx.supabase.co'; 
         const supabaseKey = 'sb_publishable_U5o5MEG7gyNsUuCvkEhxUw_oFcjxxBv'; 
-        
-        // Menggunakan window.supabase agar tidak bentrok
         const supabaseClient = window.supabase.createClient(supabaseUrl, supabaseKey);
 
         let selectedColor = 'pink';
         let selectedPin = '❤️';
         let imageBase64 = '';
 
-        // Handle Pilih Warna Amplop
         const colorBtns = document.querySelectorAll('.color-btn');
         colorBtns.forEach(btn => {
             btn.addEventListener('click', (e) => {
@@ -299,7 +285,6 @@
             });
         });
 
-        // Handle Pilih Custom Pin Preset
         const pinBtns = document.querySelectorAll('.pin-btn');
         const customPinInput = document.getElementById('customPinInput');
 
@@ -324,7 +309,6 @@
             }
         });
 
-        // Convert & Kompres Gambar ke Base64
         const imageInput = document.getElementById('imageInput');
         const imgPreview = document.getElementById('imgPreview');
 
@@ -365,7 +349,6 @@
             }
         });
 
-        // Submit & Simpan ke Supabase
         const btnGenerate = document.getElementById('btnGenerate');
         const loadingText = document.getElementById('loadingText');
         const resultBox = document.getElementById('resultBox');
@@ -381,7 +364,6 @@
             resultBox.style.display = 'none';
 
             try {
-                // Gunakan supabaseClient
                 const { data, error } = await supabaseClient
                     .from('letters')
                     .insert([
@@ -414,19 +396,6 @@
             }
         });
 
-        // Copy Link Button
-        const btnCopy = document.getElementById('btnCopy');
-        btnCopy.addEventListener('click', (e) => {
-            e.preventDefault();
-            generatedLinkInput.select();
-            navigator.clipboard.writeText(generatedLinkInput.value);
-            btnCopy.innerText = "Tersalin! ✔️";
-            setTimeout(() => {
-                btnCopy.innerText = "Salin Link";
-            }, 2000);
-        });
-
-        // Copy Link Button
         const btnCopy = document.getElementById('btnCopy');
         btnCopy.addEventListener('click', (e) => {
             e.preventDefault();
