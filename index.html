@@ -277,21 +277,12 @@
     </div>
 
     <script>
-        // INISIALISASI SUPABASE
+       // 1. INISIALISASI SUPABASE (Ganti nama variabel jadi supabaseClient)
         const supabaseUrl = 'https://npyscrwasomskilhxxkx.supabase.co'; 
-const supabaseKey = 'sb_publishable_U5o5MEG7gyNsUuCvkEhxUw_oFcjxxBv'; 
-
-// Pastikan supabaseLoaded sebelum memanggil createClient
-const createSupabaseClient = () => {
-    if (window.supabase && window.supabase.createClient) {
-        return window.supabase.createClient(supabaseUrl, supabaseKey);
-    } else if (typeof supabase !== 'undefined' && supabase.createClient) {
-        return supabase.createClient(supabaseUrl, supabaseKey);
-    }
-    return null;
-};
-
-const supabase = createSupabaseClient();
+        const supabaseKey = 'sb_publishable_U5o5MEG7gyNsUuCvkEhxUw_oFcjxxBv'; 
+        
+        // Menggunakan window.supabase agar tidak bentrok
+        const supabaseClient = window.supabase.createClient(supabaseUrl, supabaseKey);
 
         let selectedColor = 'pink';
         let selectedPin = '❤️';
@@ -390,8 +381,8 @@ const supabase = createSupabaseClient();
             resultBox.style.display = 'none';
 
             try {
-                // Simpan langsung ke database Supabase
-                const { data, error } = await supabase
+                // Gunakan supabaseClient
+                const { data, error } = await supabaseClient
                     .from('letters')
                     .insert([
                         { 
@@ -421,6 +412,18 @@ const supabase = createSupabaseClient();
                 btnGenerate.disabled = false;
                 loadingText.style.display = 'none';
             }
+        });
+
+        // Copy Link Button
+        const btnCopy = document.getElementById('btnCopy');
+        btnCopy.addEventListener('click', (e) => {
+            e.preventDefault();
+            generatedLinkInput.select();
+            navigator.clipboard.writeText(generatedLinkInput.value);
+            btnCopy.innerText = "Tersalin! ✔️";
+            setTimeout(() => {
+                btnCopy.innerText = "Salin Link";
+            }, 2000);
         });
 
         // Copy Link Button
