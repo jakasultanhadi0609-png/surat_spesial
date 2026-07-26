@@ -147,6 +147,7 @@
             border-bottom-right-radius: 6px;
             z-index: 4;
             transform-style: preserve-3d;
+            cursor: pointer;
         }
 
         .envelope-flap {
@@ -159,13 +160,13 @@
             border-left: calc(min(300px, 85vw) / 2) solid transparent;
             border-right: calc(min(300px, 85vw) / 2) solid transparent;
             transform-origin: top;
-            transition: transform 0.4s ease-in-out;
-            z-index: 5;
+            transition: transform 0.5s ease-in-out;
+            z-index: 6;
         }
 
         .envelope-pin {
             position: absolute;
-            top: -30px; 
+            top: -20px; 
             left: 50%;
             transform: translateX(-50%);
             width: 34px;
@@ -177,9 +178,10 @@
             justify-content: center;
             align-items: center;
             color: #ffd700;
-            font-size: 14px;
+            font-size: 16px;
             font-weight: bold;
             pointer-events: none;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.3);
         }
 
         .envelope-wrapper::after {
@@ -321,7 +323,7 @@
         }
 
         .container.open .envelope-wrapper {
-            animation: jatuhBawah 0.8s forwards 0.3s;
+            animation: jatuhBawah 0.8s forwards 0.4s;
             will-change: transform, opacity;
         }
 
@@ -331,7 +333,7 @@
         }
 
         .container.open .letter {
-            animation: lompatLurusDepan 0.7s forwards 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            animation: lompatLurusDepan 0.7s forwards 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
         }
 
         @keyframes lompatLurusDepan {
@@ -380,9 +382,9 @@
     </div>
 
     <script>
-        // INISIALISASI SUPABASE (GANTI DENGAN DATA KAMU)
-        const supabaseUrl = 'URL_SUPABASE_KAMU'; 
-        const supabaseKey = 'ANON_KEY_SUPABASE_KAMU'; 
+        // INISIALISASI SUPABASE
+        const supabaseUrl = 'https://npyscrwasomskilhxxkx.supabase.co'; 
+        const supabaseKey = 'sb_publishable_U5o5MEG7gyNsUuCvkEhxUw_oFcjxxBv'; 
         const supabase = window.supabase.createClient(supabaseUrl, supabaseKey);
 
         // Ambil Data Surat dari Database
