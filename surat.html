@@ -383,9 +383,9 @@
 
     <script>
         // INISIALISASI SUPABASE
-        const supabaseUrl = 'https://npyscrwasomskilhxxkx.supabase.co'; 
-        const supabaseKey = 'sb_publishable_U5o5MEG7gyNsUuCvkEhxUw_oFcjxxBv'; 
-        const supabase = window.supabase.createClient(supabaseUrl, supabaseKey);
+       const supabaseUrl = 'https://npyscrwasomskilhxxkx.supabase.co'; 
+const supabaseKey = 'sb_publishable_U5o5MEG7gyNsUuCvkEhxUw_oFcjxxBv'; 
+const supabaseClient = window.supabase.createClient(supabaseUrl, supabaseKey);
 
         // Ambil Data Surat dari Database
         async function loadLetterData() {
@@ -399,7 +399,7 @@
             }
 
             try {
-                const { data, error } = await supabase
+                const { data, error } = await supabaseClient
                     .from('letters')
                     .select('*')
                     .eq('id', letterId)
